@@ -1,0 +1,8 @@
+# Unity Burst LLVM binaries
+*.dylib filter=lfs diff=lfs merge=lfs -text
+*.so filter=lfs diff=lfs merge=lfs -text
+burst-llvm-*.dll filter=lfs diff=lfs merge=lfs -text
+# Unity Library artifacts (regenerate on build)
+Library/ArtifactDB/** filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/**/*.dylib filter=lfs diff=lfs merge=lfs -text
+Library/PackageCache/**/*.so filter=lfs diff=lfs merge=lfs -text
