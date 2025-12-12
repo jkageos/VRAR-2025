@@ -105,6 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 173a3a724c759440c8e13a3b5fd75c14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpIcing
+  icingColor: {r: 0.5764706, g: 0.4392157, b: 0.8588236, a: 1}
   hasSpawnedReplacement: 0
   spawner: {fileID: 0}
 --- !u!65 &-6039968522994412146

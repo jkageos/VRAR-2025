@@ -93,6 +93,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &2745222127940030815
 BoxCollider:
@@ -147,7 +148,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0.01
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -197,3 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 403626ba6ed6243e2890d6ffbe36756c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpTray
+  spawner: {fileID: 0}
+  icingLayerPrefab: {fileID: 3800685191396298403, guid: 0bd4a663a39f04b5b93380410a8a703b, type: 3}
+  surfaceOffset: 0.022
+  icingThickness: 0.02

@@ -3,78 +3,97 @@ using UnityEngine.InputSystem;
 
 public class PickUpIcing : MonoBehaviour
 {
-    private bool isHeld = false;
+    [Header("Icing Properties")]
+    // --- 1. SET THIS COLOR IN THE INSPECTOR FOR EACH PREFAB ---
+    public Color icingColor = Color.white; 
+    // ----------------------------------------------------------
 
-    [HideInInspector]
-    public bool hasSpawnedReplacement = false; // <- make it public
+    private bool isHeld = false;
+    
+    [HideInInspector] 
+    public bool hasSpawnedReplacement = false;
 
     private Transform holdPoint;
     private Rigidbody rb;
-    public IcingSpawner spawner;
-    private Collider[] allIcingColliders;
+    private Collider myCollider;
 
-    private Renderer icingRenderer;
+    public IcingSpawner spawner;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        icingRenderer = GetComponent<Renderer>();
+        myCollider = GetComponent<Collider>();
 
-        // Create a hold point
-        holdPoint = new GameObject("IcingHoldPoint").transform;
-        holdPoint.position = Camera.main.transform.position + Camera.main.transform.forward * 1.5f;
-        holdPoint.SetParent(Camera.main.transform);
-
-        // Find all icing objects to disable collisions between held icing
-        PickUpIcing[] icings = FindObjectsOfType<PickUpIcing>();
-        allIcingColliders = new Collider[icings.Length];
-        for (int i = 0; i < icings.Length; i++)
+        if (Camera.main != null)
         {
-            if (icings[i].GetComponent<Collider>() != null)
-                allIcingColliders[i] = icings[i].GetComponent<Collider>();
+            holdPoint = new GameObject("IcingHoldPoint").transform;
+            holdPoint.position = Camera.main.transform.position + Camera.main.transform.forward * 1.5f;
+            holdPoint.SetParent(Camera.main.transform);
         }
     }
 
     void Update()
     {
         if (isHeld)
-            transform.position = holdPoint.position;
+        {
+            // Unity 6 use rb.linearVelocity. Older Unity use rb.velocity.
+            rb.linearVelocity = Vector3.zero; 
+            rb.angularVelocity = Vector3.zero;
+
+            transform.position = Vector3.Lerp(transform.position, holdPoint.position, Time.deltaTime * 10f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, holdPoint.rotation, Time.deltaTime * 10f);
+        }
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-            // PICK UP
-            if (!isHeld && Physics.Raycast(ray, out RaycastHit hit, 5f))
+            if (!isHeld)
             {
-                if (hit.collider.gameObject == gameObject)
+                // PICK UP
+                if (Physics.Raycast(ray, out RaycastHit hit, 5f))
                 {
-                    isHeld = true;
-                    rb.isKinematic = true;
-
-                    foreach (var col in allIcingColliders)
-                        if (col != GetComponent<Collider>())
-                            Physics.IgnoreCollision(GetComponent<Collider>(), col, true);
-
-                    // Spawn replacement only once
-                    if (!hasSpawnedReplacement)
+                    if (hit.collider.gameObject == gameObject)
                     {
-                        hasSpawnedReplacement = true;
-                        if (spawner != null)
-                            spawner.SpawnNewIcing();
+                        Pickup();
                     }
                 }
             }
-            // DROP
-            else if (isHeld)
+            else 
             {
-                isHeld = false;
-                rb.isKinematic = false;
+                // PLACE ON TRAY
+                if (Physics.Raycast(ray, out RaycastHit hitTarget, 5f))
+                {
+                    PickUpTray targetTray = hitTarget.collider.GetComponentInParent<PickUpTray>();
 
-                foreach (var col in allIcingColliders)
-                    if (col != GetComponent<Collider>())
-                        Physics.IgnoreCollision(GetComponent<Collider>(), col, false);
+                    if (targetTray != null)
+                    {
+                        targetTray.ReceiveIcing(gameObject);
+                        return; 
+                    }
+                }
+                DropLogic();
             }
         }
+    }
+
+    void Pickup()
+    {
+        isHeld = true;
+        rb.isKinematic = true; 
+        if (myCollider != null) myCollider.enabled = false;
+
+        if (!hasSpawnedReplacement)
+        {
+            hasSpawnedReplacement = true;
+            if (spawner != null) spawner.SpawnNewIcing();
+        }
+    }
+
+    void DropLogic()
+    {
+        isHeld = false;
+        rb.isKinematic = false;
+        if (myCollider != null) myCollider.enabled = true;
     }
 }
