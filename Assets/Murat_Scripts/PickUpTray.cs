@@ -17,7 +17,8 @@ public class PickUpTray : MonoBehaviour
     public float surfaceOffset = 0.005f;
     public float icingThickness = 0.02f;
 
-    private int icingLayerCount = 0;
+    // Changed to Public so we can calculate stack height
+    public int icingLayerCount = 0;
 
     void Start()
     {
@@ -40,6 +41,20 @@ public class PickUpTray : MonoBehaviour
         }
     }
 
+    // --- HELPER: Calculate where the top of the stack is ---
+    public float GetLocalStackTop()
+    {
+        float trayTopY = 0.5f;
+        MeshFilter mf = GetComponent<MeshFilter>();
+        if (mf != null) trayTopY = mf.mesh.bounds.extents.y;
+
+        Vector3 parentScale = transform.localScale;
+
+        // Base Mesh Height + Surface Offset + All Icing Layers
+        float totalHeight = trayTopY + (surfaceOffset / parentScale.y) + (icingLayerCount * (icingThickness / parentScale.y));
+        return totalHeight;
+    }
+
     // --- BATTER LOGIC ---
     public void ReceiveBatter(Color batterColor)
     {
@@ -52,18 +67,12 @@ public class PickUpTray : MonoBehaviour
     {
         if (icingSource == null) return;
 
-        // 1. GET COLOR FROM SCRIPT
         Color colorToApply = Color.white;
         PickUpIcing icingScript = icingSource.GetComponent<PickUpIcing>();
 
-        if (icingScript != null)
-        {
-            // USE THE COLOR YOU SET IN THE INSPECTOR
-            colorToApply = icingScript.icingColor;
-        }
+        if (icingScript != null) colorToApply = icingScript.icingColor;
         else
         {
-            // Fallback (try to guess from mesh)
             Renderer sourceRend = icingSource.GetComponentInChildren<Renderer>();
             if (sourceRend != null) colorToApply = sourceRend.material.color;
         }
@@ -72,21 +81,19 @@ public class PickUpTray : MonoBehaviour
 
         if (icingLayerPrefab == null) return;
 
-        // 2. INSTANTIATE
         GameObject newLayer = Instantiate(icingLayerPrefab, transform);
         if (newLayer.GetComponent<Rigidbody>()) Destroy(newLayer.GetComponent<Rigidbody>());
 
-        // 3. SCALE FIX (Anti-Squish)
+        // Anti-Squish Scale
         Vector3 desiredScale = icingLayerPrefab.transform.localScale;
         Vector3 parentScale = transform.localScale;
-
         newLayer.transform.localScale = new Vector3(
             desiredScale.x / parentScale.x,
             desiredScale.y / parentScale.y,
             desiredScale.z / parentScale.z
         );
 
-        // 4. POSITION FIX (Surface Detection)
+        // Position Logic
         float trayTopY = 0.5f;
         MeshFilter mf = GetComponent<MeshFilter>();
         if (mf != null) trayTopY = mf.mesh.bounds.extents.y;
@@ -98,18 +105,20 @@ public class PickUpTray : MonoBehaviour
         newLayer.transform.localPosition = new Vector3(0, finalY, 0);
         newLayer.transform.localRotation = Quaternion.identity;
 
-        // 5. APPLY COLOR
         Renderer layerRend = newLayer.GetComponentInChildren<Renderer>();
-        if (layerRend != null)
-        {
-            layerRend.material.color = colorToApply;
-        }
+        if (layerRend != null) layerRend.material.color = colorToApply;
 
         icingLayerCount++;
     }
 
     void Update()
     {
+        // 1. Prevent moving if we are the child of another tray (bottom tray handles movement)
+        if (transform.parent != null && transform.parent.GetComponent<PickUpTray>() != null)
+        {
+            return;
+        }
+
         if (isHeld)
         {
             rb.linearVelocity = Vector3.zero;
@@ -125,6 +134,7 @@ public class PickUpTray : MonoBehaviour
 
             if (!isHeld)
             {
+                // PICKUP
                 if (Physics.Raycast(ray, out RaycastHit hit, 5f))
                 {
                     if (hit.transform == transform || hit.transform.IsChildOf(transform))
@@ -135,7 +145,80 @@ public class PickUpTray : MonoBehaviour
             }
             else
             {
+                // DROP / STACK
+                // First, check if we are aiming at another tray
+                if (Physics.Raycast(ray, out RaycastHit hitTarget, 5f))
+                {
+                    PickUpTray targetTray = hitTarget.collider.GetComponentInParent<PickUpTray>();
+
+                    // If we found a tray, and it's not ourselves
+                    if (targetTray != null && targetTray != this)
+                    {
+                        StackOntoTray(targetTray);
+                        return;
+                    }
+                }
+
+                // If no tray found, do normal drop
                 Drop();
+            }
+        }
+    }
+
+    // --- NEW STACKING LOGIC ---
+    void StackOntoTray(PickUpTray targetBase)
+    {
+        isHeld = false;
+
+        // 1. Parent to the target
+        transform.SetParent(targetBase.transform);
+
+        // 2. SCALE FIX (Anti-Squish for Tray)
+        // If the base tray is Scale(0.5), we need to become Scale(2.0) to look normal.
+        Vector3 parentScale = targetBase.transform.localScale;
+        transform.localScale = new Vector3(
+            1f / parentScale.x,
+            1f / parentScale.y,
+            1f / parentScale.z
+        );
+
+        // 3. POSITION FIX
+        // Ask the base tray how high its stack is
+        float baseTopY = targetBase.GetLocalStackTop();
+
+        // Get our own half-height
+        float myHalfHeight = 0.5f;
+        MeshFilter mf = GetComponent<MeshFilter>();
+        if (mf != null) myHalfHeight = mf.mesh.bounds.extents.y;
+
+        // Calculate final Y local position
+        float finalLocalY = baseTopY + (myHalfHeight / parentScale.y);
+
+        transform.localPosition = new Vector3(0, finalLocalY, 0);
+
+        // 4. ROTATION FIX
+        // Reset rotation to align perfectly with the base tray (flattens it)
+        transform.localRotation = Quaternion.identity;
+
+        // 5. PHYSICS LOCK
+        rb.isKinematic = true;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        // 6. COLLISION IGNORE
+        // We must ignore collision with the tray beneath us, or physics will push us off
+        foreach (var col in allTrayColliders)
+        {
+            if (col != null && GetComponent<Collider>() != null)
+            {
+                if (col.gameObject == targetBase.gameObject)
+                {
+                    Physics.IgnoreCollision(GetComponent<Collider>(), col, true);
+                }
+                else
+                {
+                    Physics.IgnoreCollision(GetComponent<Collider>(), col, false);
+                }
             }
         }
     }
