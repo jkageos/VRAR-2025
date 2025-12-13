@@ -92,6 +92,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &3113390638183144263
 MeshCollider:
@@ -176,3 +177,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpTray
   spawner: {fileID: 0}
+  icingLayerPrefab: {fileID: 1378378205063612151, guid: 6aac4f5d2db8546bcadeef4fe8b37d8f, type: 3}
+  surfaceOffset: 0.025
+  icingThickness: 0.015

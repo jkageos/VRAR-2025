@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b168bca0becbb4262a541694348844d1
+timeCreated: 1484057838
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 80208
+  packageName: Kitchen Props Free
+  packageVersion: 1.0
+  assetPath: Assets/kitchen props/prefabs/plate-stack-small.prefab
+  uploadId: 262813

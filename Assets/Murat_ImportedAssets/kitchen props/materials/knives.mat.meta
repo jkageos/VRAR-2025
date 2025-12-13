@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 16a6162d52bd845e68a800aa5ee9bc3e
+timeCreated: 1484057613
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 80208
+  packageName: Kitchen Props Free
+  packageVersion: 1.0
+  assetPath: Assets/kitchen props/materials/knives.mat
+  uploadId: 262813

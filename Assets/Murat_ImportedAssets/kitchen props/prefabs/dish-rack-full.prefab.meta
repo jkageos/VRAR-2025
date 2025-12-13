@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 30a29f0df0c1146909d0f234703e4589
+timeCreated: 1484058270
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 80208
+  packageName: Kitchen Props Free
+  packageVersion: 1.0
+  assetPath: Assets/kitchen props/prefabs/dish-rack-full.prefab
+  uploadId: 262813

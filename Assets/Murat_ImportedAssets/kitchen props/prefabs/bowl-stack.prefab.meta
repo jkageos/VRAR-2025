@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d4a2daf6e92f44119b57593166fdb5db
+timeCreated: 1484057823
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 80208
+  packageName: Kitchen Props Free
+  packageVersion: 1.0
+  assetPath: Assets/kitchen props/prefabs/bowl-stack.prefab
+  uploadId: 262813

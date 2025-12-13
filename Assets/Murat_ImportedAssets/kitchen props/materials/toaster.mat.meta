@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e1514ac324732412586ef061436626b1
+timeCreated: 1484056898
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 80208
+  packageName: Kitchen Props Free
+  packageVersion: 1.0
+  assetPath: Assets/kitchen props/materials/toaster.mat
+  uploadId: 262813
