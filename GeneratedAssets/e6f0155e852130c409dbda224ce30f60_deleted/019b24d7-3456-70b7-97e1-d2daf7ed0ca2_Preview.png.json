@@ -1,0 +1,11 @@
+{
+    "asset": "e6f0155e852130c409dbda224ce30f60",
+    "fileName": "019b24d7-3456-70b7-97e1-d2daf7ed0ca2_Preview.png",
+    "prompt": "Create a custom shader with the _RimColor property",
+    "negativePrompt": "",
+    "model": "44ec3749-963a-44b1-aa54-dc19f6ed8ab2",
+    "modelName": "Unity Texture2D",
+    "customSeed": 1292526011,
+    "w3CTraceId": "c11809ede927773a1ad3a61449596fa2",
+    "refinementMode": "Generation"
+}

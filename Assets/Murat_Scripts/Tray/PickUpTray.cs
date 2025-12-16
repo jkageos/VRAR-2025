@@ -32,7 +32,7 @@ public class PickUpTray : MonoBehaviour
             holdPoint.SetParent(Camera.main.transform);
         }
 
-        PickUpTray[] trays = FindObjectsOfType<PickUpTray>();
+        PickUpTray[] trays = FindObjectsByType<PickUpTray>(FindObjectsSortMode.None);
         allTrayColliders = new Collider[trays.Length];
         for (int i = 0; i < trays.Length; i++)
         {
@@ -253,7 +253,7 @@ public class PickUpTray : MonoBehaviour
 
     void SnapToClosestPoint()
     {
-        TraySnapPoint[] snapPoints = FindObjectsOfType<TraySnapPoint>();
+        TraySnapPoint[] snapPoints = FindObjectsByType<TraySnapPoint>(FindObjectsSortMode.None);
         TraySnapPoint closest = null;
         float minDist = Mathf.Infinity;
 

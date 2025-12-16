@@ -23,7 +23,7 @@ public class PickUpBatter : MonoBehaviour
         holdPoint.SetParent(Camera.main.transform);
 
         // find all batters
-        PickUpBatter[] batters = FindObjectsOfType<PickUpBatter>();
+        PickUpBatter[] batters = FindObjectsByType<PickUpBatter>(FindObjectsSortMode.None);
         allBatterColliders = new Collider[batters.Length];
         for (int i = 0; i < batters.Length; i++)
         {

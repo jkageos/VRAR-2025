@@ -24,7 +24,6 @@ namespace CapsuleCharacter.EditorTools
         bool lockBody = false;
         bool lockFace = false;
         bool lockHat = false;
-        bool lockBlendShapes = false;
 
         // Character Data
         static GameObject spawnedCharacter;
@@ -39,7 +38,6 @@ namespace CapsuleCharacter.EditorTools
         int hatIndex = 0;
         string characterName = "";
         bool isLoading = true;
-        bool watchingCharacter = false;
 
         // BlendShape Data (Kullanıcı isteği üzerine sahte verilerle dolduruldu)
         Vector2 blendScroll;
@@ -431,7 +429,7 @@ namespace CapsuleCharacter.EditorTools
                 instantiatedHats.Add(instance);
             }
 
-            lockBody = lockFace = lockHat = lockBlendShapes = false;
+            lockBody = lockFace = lockHat = false;
             isLoading = false;
 
             LoadIcons();
